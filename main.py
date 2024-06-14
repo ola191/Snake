@@ -59,9 +59,18 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
 
-        topRightContainer = QWidget()
-        topRightLayout = QHBoxLayout(topRightContainer)
-        topRightLayout.setAlignment(Qt.AlignRight)
+        topContainer = QWidget()
+        topLayout = QHBoxLayout(topContainer)
+        topLayout.setContentsMargins(0, 0, 0, 0)
+        topLayout.setSpacing(10)
+
+        self.pointsLabel = QLabel(f"Points: {self.points}")
+        self.levelLabel = QLabel(f"Level: {self.currentLevel}")
+
+        topLayout.addWidget(self.pointsLabel, alignment=(Qt.AlignRight))
+        topLayout.addWidget(self.levelLabel, alignment=Qt.AlignLeft)
+
+        self.layout.addWidget(topContainer) 
 
         self.startBtn = QPushButton("start")
         self.startBtn.clicked.connect(self.startGame)
@@ -69,15 +78,7 @@ class MainWindow(QMainWindow):
         self.startBtn.setStyleSheet("background-color: #B3A6A3; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
         self.layout.addWidget(self.startBtn)
 
-        self.pointsLabel = QLabel()
-        self.levelLabel = QLabel()
-
-        topRightLayout.addWidget(self.pointsLabel)
-        topRightLayout.addWidget(self.levelLabel)
-        self.layout.addWidget(topRightContainer, alignment=Qt.AlignTop | Qt.AlignRight) 
-
-        self.pointsLabel.hide()
-        self.levelLabel.hide()
+        topContainer.setFixedHeight(50)
 
         self.gridLayout = QGridLayout()
         self.layout.addLayout(self.gridLayout)
@@ -87,11 +88,8 @@ class MainWindow(QMainWindow):
     def startGame(self):
         if not self.gameStarted:
             self.currentLevel += 1
-            self.layout.setAlignment(Qt.AlignTop | Qt.AlignRight)
             self.gameStarted = True
             self.startBtn.hide()
-            self.pointsLabel.show()
-            self.levelLabel.show()
             self.levelLabel.setText(f"Level: {self.currentLevel + 1}")
             self.pointsLabel.setText(f"Points: {self.points}")
 
@@ -105,7 +103,7 @@ class MainWindow(QMainWindow):
         for row in range(map_size[0]):
             for col in range(map_size[1]):
                 mapBlock = QLabel()
-                mapBlock.setStyleSheet("background-color: #000000; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+                mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
         # snake = [[0,0], [0,1], [0,2], [0,3]]
