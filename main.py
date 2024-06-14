@@ -1,6 +1,6 @@
 import json
 import sys 
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
@@ -56,39 +56,44 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.mainWidget)
         self.mainWidget.setStyleSheet("background-color: #D5B0A8;")
 
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignCenter)
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignCenter)
+
+        topRightContainer = QWidget()
+        topRightLayout = QHBoxLayout(topRightContainer)
+        topRightLayout.setAlignment(Qt.AlignRight)
 
         self.startBtn = QPushButton("start")
         self.startBtn.clicked.connect(self.startGame)
         self.startBtn.setFixedSize(100, 50)
         self.startBtn.setStyleSheet("background-color: #B3A6A3; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
-        layout.addWidget(self.startBtn)
+        self.layout.addWidget(self.startBtn)
 
         self.pointsLabel = QLabel()
         self.levelLabel = QLabel()
 
-        layout.addWidget(self.pointsLabel)
-        layout.addWidget(self.levelLabel)
+        topRightLayout.addWidget(self.pointsLabel)
+        topRightLayout.addWidget(self.levelLabel)
+        self.layout.addWidget(topRightContainer, alignment=Qt.AlignTop | Qt.AlignRight) 
 
         self.pointsLabel.hide()
         self.levelLabel.hide()
 
         self.gridLayout = QGridLayout()
-        layout.addLayout(self.gridLayout)
+        self.layout.addLayout(self.gridLayout)
 
-        self.mainWidget.setLayout(layout)
+        self.mainWidget.setLayout(self.layout)
 
     def startGame(self):
         if not self.gameStarted:
+            self.layout.setAlignment(Qt.AlignTop | Qt.AlignRight)
             self.gameStarted = True
             self.startBtn.hide()
             self.pointsLabel.show()
             self.levelLabel.show()
-            self.levelLabel.setText(f"level")
-            self.pointsLabel.setText(f"points")
+            self.levelLabel.setText(f"Level: {self.currentLevel + 1}")
+            self.pointsLabel.setText(f"Points: {self.points}")
 
-        print("start game")
         pass
 
 
