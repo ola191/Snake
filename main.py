@@ -1,6 +1,6 @@
 import json
 import sys 
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel, QHBoxLayout, QCheckBox
 from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
@@ -9,7 +9,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Snake")
         self.setMinimumSize(500,500)
-
         self.levelsData = self.loadLevelsData()
         self.mapsData = self.loadMapsData()
 
@@ -17,6 +16,7 @@ class MainWindow(QMainWindow):
         self.points = 0
 
         self.gameStarted = False
+        self.squareBlocks = False
         
         self.setupUi()
 
@@ -49,6 +49,9 @@ class MainWindow(QMainWindow):
 
         self.mainWidget.setFixedSize(width, height)
 
+        if self.gameStarted:
+            self.updateMapBlockSize()
+
         super().resizeEvent(event)
 
     def setupUi(self):
@@ -78,6 +81,11 @@ class MainWindow(QMainWindow):
         self.startBtn.setStyleSheet("background-color: #B3A6A3; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
         self.layout.addWidget(self.startBtn)
 
+        self.squareBlocksBtn = QCheckBox("square blocks")
+        self.squareBlocksBtn.setChecked(self.squareBlocks)
+        self.squareBlocksBtn.stateChanged.connect(self.toggleSquareBlocks)
+        self.layout.addWidget(self.squareBlocksBtn)
+
         topContainer.setFixedHeight(50)
 
         self.gridLayout = QGridLayout()
@@ -89,33 +97,51 @@ class MainWindow(QMainWindow):
         if not self.gameStarted:
             self.currentLevel += 1
             self.gameStarted = True
+            
             self.startBtn.hide()
+            self.squareBlocksBtn.hide()
+            
             self.levelLabel.setText(f"Level: {self.currentLevel}")
             self.pointsLabel.setText(f"Points: {self.points}")
 
             self.generateMap()
-        pass
 
     def generateMap(self):
         map = self.mapsData["maps"][self.currentLevel - 1]
-        map_size = map["size"]
+        self.mapSize = map["size"]
         
-        widthUnit, heightUnit = ((self.width() - 50) / map_size[1]), ((self.height() - 50) / map_size[0])
-        for row in range(map_size[0]):
-            for col in range(map_size[1]):
+        if self.squareBlocks:
+            print("square blocks")
+            widthUnit, heightUnit = ((self.height() - 50) / self.mapSize[0], (self.height() - 50) / self.mapSize[0])
+        else:
+            print("normal blocks")
+            widthUnit, heightUnit = ((self.width() - 50) / self.mapSize[1]), ((self.height() - 50) / self.mapSize[0])
+        
+        for row in range(self.mapSize[0]):
+            for col in range(self.mapSize[1]):
                 mapBlock = QLabel()
                 mapBlock.setFixedSize(widthUnit, heightUnit)
                 mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
-        # snake = [[0,0], [0,1], [0,2], [0,3]]
+    def updateMapBlockSize(self):
         
-        # for row, col in snake:
-        #     snakeBlock = QLabel()
-        #     snakeBlock.setStyleSheet("background-color: #000000; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
-        #     self.gridLayout.addWidget(snakeBlock, row, col)
+        if self.squareBlocks:
+            widthUnit, heightUnit = ((self.height() - 50) / self.mapSize[0], (self.height() - 50) / self.mapSize[0])
+        else:
+            widthUnit, heightUnit = ((self.width() - 50) / self.mapSize[1]), ((self.height() - 50) / self.mapSize[0])
 
-
+        for row in range(self.mapSize[0]):
+            for col in range(self.mapSize[1]):
+                mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
+                mapBlock.setFixedSize(widthUnit, heightUnit)
+    
+    def toggleSquareBlocks(self, state):
+        if state == self.squareBlocksBtn.isChecked():
+            self.squareBlocks = False
+        else:
+            self.squareBlocks = True
+            
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
