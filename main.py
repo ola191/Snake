@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         self.points = 0
 
         self.gameStarted = False
-        self.squareBlocks = False
+        self.squareBlocks = True
         
         self.setupUi()
 
@@ -109,7 +109,8 @@ class MainWindow(QMainWindow):
     def generateMap(self):
         map = self.mapsData["maps"][self.currentLevel - 1]
         self.mapSize = map["size"]
-        
+        obstacles = map["obstacles"]
+
         if self.squareBlocks:
             print("square blocks")
             widthUnit, heightUnit = ((self.height() - 50) / self.mapSize[0], (self.height() - 50) / self.mapSize[0])
@@ -124,8 +125,10 @@ class MainWindow(QMainWindow):
                 mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
+        for obstacle in obstacles:
+            self.gridLayout.itemAtPosition(obstacle[0], obstacle[1]).widget().setStyleSheet("background-color: #000000;")
+
     def updateMapBlockSize(self):
-        
         if self.squareBlocks:
             widthUnit, heightUnit = ((self.height() - 50) / self.mapSize[0], (self.height() - 50) / self.mapSize[0])
         else:
