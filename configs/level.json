@@ -1,0 +1,22 @@
+{
+    "levels": [
+        {
+            "level": 1,
+            "speed": 0.5,
+            "max_length": 10,
+            "objects": 0
+        },
+        {
+            "level": 2,
+            "speed": 0.75,
+            "max_length": 12,
+            "objects": 2
+        },
+        {
+            "level": 3,
+            "speed": 1,
+            "max_length": 14,
+            "objects": 4
+        }
+    ]
+}
