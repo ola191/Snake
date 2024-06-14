@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
 
     def startGame(self):
         if not self.gameStarted:
+            self.currentLevel += 1
             self.layout.setAlignment(Qt.AlignTop | Qt.AlignRight)
             self.gameStarted = True
             self.startBtn.hide()
@@ -94,7 +95,25 @@ class MainWindow(QMainWindow):
             self.levelLabel.setText(f"Level: {self.currentLevel + 1}")
             self.pointsLabel.setText(f"Points: {self.points}")
 
+            self.generateMap()
         pass
+
+    def generateMap(self):
+        map = self.mapsData["maps"][self.currentLevel - 1]
+        map_size = map["size"]
+        
+        for row in range(map_size[0]):
+            for col in range(map_size[1]):
+                mapBlock = QLabel()
+                mapBlock.setStyleSheet("background-color: #000000; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+                self.gridLayout.addWidget(mapBlock, row, col)
+
+        # snake = [[0,0], [0,1], [0,2], [0,3]]
+        
+        # for row, col in snake:
+        #     snakeBlock = QLabel()
+        #     snakeBlock.setStyleSheet("background-color: #000000; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+        #     self.gridLayout.addWidget(snakeBlock, row, col)
 
 
 if __name__ == "__main__":
