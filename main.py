@@ -13,7 +13,8 @@ class MainWindow(QMainWindow):
         self.mapsData = self.loadMapsData()
 
         self.currentLevel = 0
-
+        self.points = 0
+        
         self.setupUi()
 
     def loadLevelsData(self):
