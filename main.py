@@ -1,6 +1,7 @@
 import json
 import sys 
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton
+from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -51,13 +52,16 @@ class MainWindow(QMainWindow):
     def setupUi(self):
         self.mainWidget = QWidget()
         self.setCentralWidget(self.mainWidget)
-        self.mainWidget.setStyleSheet("background-color: #E3A89C;")
+        self.mainWidget.setStyleSheet("background-color: #D5B0A8;")
 
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
 
-        startBtn = QPushButton("Start")
-        startBtn.clicked.connect(self.startGame)
-        layout.addWidget(startBtn)
+        self.startBtn = QPushButton("start")
+        self.startBtn.clicked.connect(self.startGame)
+        self.startBtn.setFixedSize(100, 50)
+        self.startBtn.setStyleSheet("background-color: #B3A6A3; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+        layout.addWidget(self.startBtn)
 
         self.mainWidget.setLayout(layout)
 
