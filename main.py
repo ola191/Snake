@@ -1,7 +1,39 @@
 import json
-import sys 
+import random
+import sys
+from tkinter.messagebox import showerror 
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel, QHBoxLayout, QCheckBox
 from PySide6.QtCore import Qt
+
+class Snake:
+    def __init__(self, startPosition, mapSize, direction="right"):
+        self.positions = [startPosition]
+        self.direction = "right"
+        self.mapSize = mapSize
+
+    def move(self):
+        x, y = self.positions[0]
+        match self.direction:
+            case "right":
+                newHead = (x, y + 1)
+            case "left":
+                newHead = (x, y - 1)
+            case "up":
+                newHead = (x - 1, y)
+            case "down":
+                newHead = (x + 1, y)
+        newHead = self.checkIfOutOfBounds(newHead)
+        if newHead not in self.positions:
+            self.positions.insert(0, newHead)
+            self.positions.pop()
+        else:
+            self.gameOver()
+
+    def checkIfOutOfBounds(self, newHead):
+        if newHead[0] < 0 or newHead[0] >= self.mapSize[0] or newHead[1] < 0 or newHead[1] >= self.mapSize[1]:
+            return self.positions[0]
+        else:
+            return newHead
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -105,17 +137,26 @@ class MainWindow(QMainWindow):
             self.pointsLabel.setText(f"Points: {self.points}")
 
             self.generateMap()
+            
+            startPosition = self.getStartPosition()
+            self.snake = Snake(startPosition, self.mapSize, direction = "right")
+    
+    def gameOver(self):
+        self.gameStarted = False
+        self.startBtn.show()
+        self.squareBlocksBtn.show()
+        self.pointsLabel.setText(f"Points: {self.points}")
+        self.levelLabel.setText(f"Level: {self.currentLevel}")
+        showerror("Game Over", f"Your points: {self.points}")
 
     def generateMap(self):
         map = self.mapsData["maps"][self.currentLevel - 1]
         self.mapSize = map["size"]
-        obstacles = map["obstacles"]
+        self.obstacles = map["obstacles"]
 
         if self.squareBlocks:
-            print("square blocks")
             widthUnit, heightUnit = ((self.height() - 50) / self.mapSize[0], (self.height() - 50) / self.mapSize[0])
         else:
-            print("normal blocks")
             widthUnit, heightUnit = ((self.width() - 50) / self.mapSize[1]), ((self.height() - 50) / self.mapSize[0])
         
         for row in range(self.mapSize[0]):
@@ -125,7 +166,7 @@ class MainWindow(QMainWindow):
                 mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
-        for obstacle in obstacles:
+        for obstacle in self.obstacles:
             self.gridLayout.itemAtPosition(obstacle[0], obstacle[1]).widget().setStyleSheet("background-color: #000000;")
 
     def updateMapBlockSize(self):
@@ -144,6 +185,17 @@ class MainWindow(QMainWindow):
             self.squareBlocks = False
         else:
             self.squareBlocks = True
+    
+    def getStartPosition(self):
+        availablePositions = []
+        for row in range(self.mapSize[0]):
+            for col in range(self.mapSize[1]):
+                if [row, col] not in self.obstacles:
+                    availablePositions.append((row,col))
+        if availablePositions:
+            return random.choice(availablePositions)
+        else:
+            showerror("No available positions")
             
 if __name__ == "__main__":
     app = QApplication(sys.argv)
