@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
             self.currentLevel += 1
             self.gameStarted = True
             self.startBtn.hide()
-            self.levelLabel.setText(f"Level: {self.currentLevel + 1}")
+            self.levelLabel.setText(f"Level: {self.currentLevel}")
             self.pointsLabel.setText(f"Points: {self.points}")
 
             self.generateMap()
@@ -100,9 +100,11 @@ class MainWindow(QMainWindow):
         map = self.mapsData["maps"][self.currentLevel - 1]
         map_size = map["size"]
         
+        widthUnit, heightUnit = ((self.width() - 50) / map_size[1]), ((self.height() - 50) / map_size[0])
         for row in range(map_size[0]):
             for col in range(map_size[1]):
                 mapBlock = QLabel()
+                mapBlock.setFixedSize(widthUnit, heightUnit)
                 mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
