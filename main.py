@@ -12,6 +12,8 @@ class MainWindow(QMainWindow):
         self.levelsData = self.loadLevelsData()
         self.mapsData = self.loadMapsData()
 
+        self.currentLevel = 0
+
         self.setupUi()
 
     def loadLevelsData(self):
@@ -48,7 +50,7 @@ class MainWindow(QMainWindow):
     def setupUi(self):
         self.mainWidget = QWidget()
         self.setCentralWidget(self.mainWidget)
-        self.mainWidget.setStyleSheet("background-color: #FFBB00;")
+        self.mainWidget.setStyleSheet("background-color: #E3A89C;")
 
         layout = QVBoxLayout()
 
