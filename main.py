@@ -220,16 +220,12 @@ class MainWindow(QMainWindow):
         if self.gameStarted:
             key = event.key()
             if key == Qt.Key_A:
-                print("left")
                 self.snake.changeDirection("left")
             elif key == Qt.Key_D:
-                print("right")
                 self.snake.changeDirection("right")
             elif key == Qt.Key_W:
-                print("up")
                 self.snake.changeDirection("up")
             elif key == Qt.Key_S:
-                print("down")
                 self.snake.changeDirection("down")
             self.snake.move()
             self.updateSnakePosition()
