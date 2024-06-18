@@ -7,13 +7,15 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide6.QtCore import Qt, QTimer
 
 class Snake:
-    def __init__(self, startPosition, mapSize, direction="right"):
+    def __init__(self, startPosition, mapSize, mainWindow, direction="right"):
         self.positions = [startPosition]
-        self.direction = "right"
+        self.direction = direction
         self.mapSize = mapSize
+        self.mainWindow = mainWindow
 
     def move(self):
         x, y = self.positions[0]
+        newHead = ()
         if self.direction == "right":
             newHead = (x, y + 1)
         elif self.direction == "left":
@@ -27,7 +29,7 @@ class Snake:
             self.positions.insert(0, newHead)
             self.positions.pop()
         else:
-            self.gameOver()
+            self.mainWindow.gameOver()
 
     def checkIfOutOfBounds(self, newHead):
         if newHead[0] < 0 or newHead[0] >= self.mapSize[0] or newHead[1] < 0 or newHead[1] >= self.mapSize[1]:
@@ -35,14 +37,14 @@ class Snake:
         else:
             return newHead
     
-    def changeDirection(self, newHead):
-        if newHead[0] > self.positions[0][0]:
+    def changeDirection(self, newDirection):
+        if newDirection == "right" and self.direction != "left":
             self.direction = "right"
-        elif newHead[0] < self.positions[0][0]:
+        elif newDirection == "left" and self.direction != "right":
             self.direction = "left"
-        elif newHead[1] > self.positions[0][1]:
+        elif newDirection == "down" and self.direction != "up":
             self.direction = "down"
-        elif newHead[1] < self.positions[0][1]:
+        elif newDirection == "up" and self.direction != "down":
             self.direction = "up"
 
 class MainWindow(QMainWindow):
@@ -149,7 +151,7 @@ class MainWindow(QMainWindow):
             self.generateMap()
             
             startPosition = self.getStartPosition()
-            self.snake = Snake(startPosition, self.mapSize, direction = "right")
+            self.snake = Snake(startPosition, self.mapSize, self, direction = "right")
     
     def gameOver(self):
         self.gameStarted = False
@@ -210,17 +212,16 @@ class MainWindow(QMainWindow):
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if self.gameStarted:
             key = event.key()
-            print("dsa")
-            if key == Qt.Key_Left:
+            if key == Qt.Key_A:
                 print("left")
                 self.snake.changeDirection("left")
-            elif key == Qt.Key_Right:
+            elif key == Qt.Key_D:
                 print("right")
                 self.snake.changeDirection("right")
-            elif key == Qt.Key_Up:
+            elif key == Qt.Key_W:
                 print("up")
                 self.snake.changeDirection("up")
-            elif key == Qt.Key_Down:
+            elif key == Qt.Key_S:
                 print("down")
                 self.snake.changeDirection("down")
             self.snake.move()
