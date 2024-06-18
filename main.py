@@ -33,7 +33,7 @@ class Snake:
                 self.mainWindow.apples.remove(list(newHead))
                 self.length += 1
                 self.mainWindow.points += 1
-                self.mainWindow.pointsLabel.setText(f"Points: {self.mainWindow.points}")
+                self.mainWindow.pointsLabel.setText(f"{self.mainWindow.points}")
             else:
                 self.positions.pop()
         else:
@@ -115,8 +115,9 @@ class MainWindow(QMainWindow):
 
     def setupUi(self):
         self.mainWidget = QWidget()
+        self.mainWidget.setContentsMargins(10, 10, 10, 10)
         self.setCentralWidget(self.mainWidget)
-        self.mainWidget.setStyleSheet("background-color: #D5B0A8;")
+        self.mainWidget.setStyleSheet("background-color: #b3a6a3;")
 
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignCenter)
@@ -124,13 +125,14 @@ class MainWindow(QMainWindow):
         topContainer = QWidget()
         topLayout = QHBoxLayout(topContainer)
         topLayout.setContentsMargins(0, 0, 0, 0)
-        topLayout.setSpacing(10)
 
-        self.pointsLabel = QLabel(f"Points: {self.points}")
+        self.pointsLabel = QLabel(f"{self.points}")
+        self.pointsLabel.alignment = Qt.AlignCenter
+        self.pointsLabel.setStyleSheet("font-size: 25px; font-weight: semibold;")
         self.levelLabel = QLabel(f"Level: {self.currentLevel}")
-
-        topLayout.addWidget(self.pointsLabel, alignment=(Qt.AlignRight))
-        topLayout.addWidget(self.levelLabel, alignment=Qt.AlignLeft)
+        self.levelLabel.hide()
+        topLayout.addWidget(self.pointsLabel, alignment=(Qt.AlignCenter))
+        # topLayout.addWidget(self.levelLabel, alignment=Qt.AlignLeft)
 
         self.layout.addWidget(topContainer) 
 
@@ -138,6 +140,7 @@ class MainWindow(QMainWindow):
         self.startBtn.clicked.connect(self.startGame)
         self.startBtn.setFixedSize(100, 50)
         self.startBtn.setStyleSheet("background-color: #B3A6A3; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+        self.startBtn.contentsMargins = (10, 10, 10, 10)
         self.layout.addWidget(self.startBtn)
 
         self.squareBlocksBtn = QCheckBox("square blocks")
@@ -160,9 +163,8 @@ class MainWindow(QMainWindow):
             self.squareBlocksBtn.hide()
             
             self.levelLabel.setText(f"Level: {self.currentLevel}")
-            self.pointsLabel.setText(f"Points: {self.points}")
+            self.pointsLabel.setText(f"{self.points}")
 
-            
             startPosition = self.getStartPosition()
             self.snake = Snake(startPosition, self.mapSize, self, direction = "right")
 
@@ -184,7 +186,7 @@ class MainWindow(QMainWindow):
         self.squareBlocksBtn.show()
         self.currentLevel = 0
         self.points = 0
-        self.pointsLabel.setText(f"Points: {self.points}")
+        self.pointsLabel.setText(f"{self.points}")
         self.levelLabel.setText(f"Level: {self.currentLevel}")
 
         self.clearlayout(self.gridLayout)
@@ -303,7 +305,7 @@ class MainWindow(QMainWindow):
         self.currentLevel += 1
         if self.currentLevel < len(self.levelsData["levels"]):
             self.points += 10
-            self.pointsLabel.setText(f"Points: {self.points}")
+            self.pointsLabel.setText(f"{self.points}")
             self.levelLabel.setText(f"Level: {self.currentLevel}")
             
             self.gameStarted = False
@@ -320,7 +322,7 @@ class MainWindow(QMainWindow):
                     mapBlock = item.widget()
                     if mapBlock:
                         if [row, col] not in self.obstacles and [row, col] not in self.snake.positions and [row, col] not in self.apples:
-                            mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+                            mapBlock.setStyleSheet("background-color: #978a87; color: #000000; border: 2px solid #7a7270; font-size: 25px; font-weight: semibold;")
 
         for pos in self.snake.positions:
             row, col = pos
@@ -355,7 +357,7 @@ class MainWindow(QMainWindow):
                 mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
                 mapBlock.setStyleSheet("background-color: #1eb81e;")
 
-        self.pointsLabel.setText(f"Points: {self.points}")
+        self.pointsLabel.setText(f"{self.points}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
