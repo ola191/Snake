@@ -2,8 +2,9 @@ import json
 import random
 import sys
 from tkinter.messagebox import showerror 
+from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QGridLayout, QLabel, QHBoxLayout, QCheckBox
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 
 class Snake:
     def __init__(self, startPosition, mapSize, direction="right"):
@@ -34,6 +35,16 @@ class Snake:
             return self.positions[0]
         else:
             return newHead
+    
+    def changeDirection(self, newHead):
+        if newHead[0] > self.positions[0][0]:
+            self.direction = "right"
+        elif newHead[0] < self.positions[0][0]:
+            self.direction = "left"
+        elif newHead[1] > self.positions[0][1]:
+            self.direction = "down"
+        elif newHead[1] < self.positions[0][1]:
+            self.direction = "up"
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -197,6 +208,41 @@ class MainWindow(QMainWindow):
         else:
             showerror("No available positions")
             
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if self.gameStarted:
+            key = event.key()
+            match key:
+                case Qt.Key_Left:
+                    print("left")
+                    self.snake.changeDirection("left")
+                case Qt.Key_Right:
+                    print("right")
+                    self.snake.changeDirection("right")
+                case Qt.Key_Up:
+                    print("up")
+                    self.snake.changeDirection("up")
+                case Qt.Key_Down:
+                    print("down")
+                    self.snake.changeDirection("down")
+            self.snake.move()
+            self.updateSnakePosition()
+    
+    def updateSnakePosition(self):
+        for pos in self.snake.positions:
+            row, col = pos
+            mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
+            mapBlock.setStyleSheet("background-color: #ffffff;")
+        headPos = self.snake.positions[0]
+        row,col = headPos
+        mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
+        mapBlock.setStyleSheet
+        mapBlock.setStyleSheet("background-color: #00ff00;")
+    
+        for pos in self.snake.positions[:1]:
+            row,col = pos
+            mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
+            mapBlock.setStyleSheet("background-color: #00ff00;")
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
