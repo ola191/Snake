@@ -153,6 +153,12 @@ class MainWindow(QMainWindow):
             startPosition = self.getStartPosition()
             self.snake = Snake(startPosition, self.mapSize, self, direction = "right")
     
+            self.updateSnakePosition()
+
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.updateGame)
+            self.timer.start(300)
+
     def gameOver(self):
         self.gameStarted = False
         self.startBtn.show()
@@ -160,6 +166,7 @@ class MainWindow(QMainWindow):
         self.pointsLabel.setText(f"Points: {self.points}")
         self.levelLabel.setText(f"Level: {self.currentLevel}")
         showerror("Game Over", f"Your points: {self.points}")
+        self.timer.stop()
 
     def generateMap(self):
         map = self.mapsData["maps"][self.currentLevel - 1]
@@ -227,6 +234,10 @@ class MainWindow(QMainWindow):
             self.snake.move()
             self.updateSnakePosition()
     
+    def updateGame(self):
+        self.snake.move()
+        self.updateSnakePosition()
+
     def updateSnakePosition(self):
         for pos in self.snake.positions:
             row, col = pos
