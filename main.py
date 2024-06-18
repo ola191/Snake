@@ -27,6 +27,7 @@ class Snake:
         newHead = self.checkIfOutOfBounds(newHead)
         if newHead not in self.positions:
             self.positions.insert(0, newHead)
+            print(self.positions)
             self.positions.pop()
         else:
             self.mainWindow.gameOver()
@@ -235,10 +236,19 @@ class MainWindow(QMainWindow):
         self.updateSnakePosition()
 
     def updateSnakePosition(self):
+
+        for row in range(self.mapSize[0]):
+            for col in range(self.mapSize[1]):
+                
+                if [row, col] not in self.obstacles:
+                    mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
+                    mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
+
         for pos in self.snake.positions:
             row, col = pos
             mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
             mapBlock.setStyleSheet("background-color: #ffffff;")
+
         headPos = self.snake.positions[0]
         row,col = headPos
         mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
