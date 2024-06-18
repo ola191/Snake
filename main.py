@@ -26,10 +26,11 @@ class Snake:
         elif self.direction == "down":
             newHead = (x + 1, y)
         
-        if newHead not in self.positions:
+        if list(newHead) not in self.positions:
             self.positions.insert(0, newHead)
-            if newHead in self.mainWindow.apples:
-                self.mainWindow.apples.remove(newHead)
+
+            if list(newHead) in self.mainWindow.apples:
+                self.mainWindow.apples.remove(list(newHead))
                 self.length += 1
                 self.mainWindow.points += 1
                 self.mainWindow.pointsLabel.setText(f"Points: {self.mainWindow.points}")
@@ -38,7 +39,7 @@ class Snake:
         else:
             self.mainWindow.gameOver("you kill self")
         
-        if self.checkIfOutOfBounds(newHead):
+        if self.checkIfOutOfBounds(list(newHead)):
             self.mainWindow.gameOver("you go out of bounds")
 
         if list(newHead) in self.mainWindow.obstacles:
@@ -281,20 +282,19 @@ class MainWindow(QMainWindow):
     def updateSnakePosition(self):
         for row in range(self.mapSize[0]):
             for col in range(self.mapSize[1]):
-               item = self.gridLayout.itemAtPosition(row, col)
-               if item is not None:
-                mapBlock = item.widget()
-                if mapBlock:
-                    if [row, col] not in self.obstacles and [row, col] not in self.snake.positions and [row, col] not in self.apples:
-                        mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
-        
+                item = self.gridLayout.itemAtPosition(row, col)
+                if item is not None:
+                    mapBlock = item.widget()
+                    if mapBlock:
+                        if [row, col] not in self.obstacles and [row, col] not in self.snake.positions and [row, col] not in self.apples:
+                            mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
 
         for pos in self.snake.positions:
             row, col = pos
             item = self.gridLayout.itemAtPosition(row, col)
             if item is not None:
                 mapBlock = item.widget()
-                mapBlock.setStyleSheet("background-color: #ffffff;")
+                mapBlock.setStyleSheet("background-color: #00ff00;")
 
         for apple in self.apples:
             row, col = apple
@@ -307,11 +307,13 @@ class MainWindow(QMainWindow):
         headPos = self.snake.positions[0]
         row,col = headPos
         item = self.gridLayout.itemAtPosition(row, col)
+
+        print("ss", self.snake.positions)
         if item is not None:
             mapBlock = item.widget()
             mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
             mapBlock.setStyleSheet
-            mapBlock.setStyleSheet("background-color: #00ff00;")
+            mapBlock.setStyleSheet("background-color: #1eb81e;")
     
         for pos in self.snake.positions[:1]:
             row,col = pos
@@ -319,7 +321,9 @@ class MainWindow(QMainWindow):
             if item is not None:
                 mapBlock = item.widget()
                 mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
-                mapBlock.setStyleSheet("background-color: #00ff00;")
+                mapBlock.setStyleSheet("background-color: #1eb81e;")
+ 
+        self.pointsLabel.setText(f"Points: {self.points}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
