@@ -154,7 +154,6 @@ class MainWindow(QMainWindow):
 
     def startGame(self):
         if not self.gameStarted:
-            self.currentLevel += 1
             self.gameStarted = True
             
             self.startBtn.hide()
@@ -167,17 +166,15 @@ class MainWindow(QMainWindow):
             startPosition = self.getStartPosition()
             self.snake = Snake(startPosition, self.mapSize, self, direction = "right")
 
-
             self.generateMap()
 
             self.generateApples()
-
 
             self.updateSnakePosition()
 
             self.timer = QTimer()
             self.timer.timeout.connect(self.updateGame)
-            self.timer.start(250)
+            self.timer.start(self.levelsData["levels"][self.currentLevel]["speed"])
 
     def gameOver(self, cause):
         self.timer.stop()
@@ -186,10 +183,11 @@ class MainWindow(QMainWindow):
         self.startBtn.show()
         self.squareBlocksBtn.show()
         self.currentLevel = 0
+        self.points = 0
         self.pointsLabel.setText(f"Points: {self.points}")
         self.levelLabel.setText(f"Level: {self.currentLevel}")
-        # showerror(cause, f"Your points: {self.points}")
-        # self.clearlayout(self.gridLayout)
+
+        self.clearlayout(self.gridLayout)
 
     def clearlayout(self, layout):
         for i in reversed(range(layout.count())):
@@ -204,13 +202,26 @@ class MainWindow(QMainWindow):
         
         for row in range(self.mapSize[0]):
             for col in range(self.mapSize[1]):
+                item = self.gridLayout.itemAtPosition(row,col)
+                if item is not None:
+                    widget = item.widget()
+                    if widget:
+                        self.gridLayout.removeWidget(widget)
+                        widget.deleteLater()
+
+        for row in range(self.mapSize[0]):
+            for col in range(self.mapSize[1]):
                 mapBlock = QLabel()
                 mapBlock.setFixedSize(widthUnit, heightUnit)
                 mapBlock.setStyleSheet("background-color: #ffffff; color: #000000; border: 2px solid #968986; font-size: 25px; font-weight: semibold;")
                 self.gridLayout.addWidget(mapBlock, row, col)
 
         for obstacle in self.obstacles:
-            self.gridLayout.itemAtPosition(obstacle[0], obstacle[1]).widget().setStyleSheet("background-color: #000000;")
+            item = self.gridLayout.itemAtPosition(obstacle[0], obstacle[1])
+            if item is not None:
+                widget = item.widget()
+                if widget:
+                    widget.setStyleSheet("background-color: #000000;")
 
         self.generateApples()
 
@@ -220,14 +231,16 @@ class MainWindow(QMainWindow):
             for col in range(self.mapSize[1]):
                 if [row, col] not in self.obstacles and [row, col] not in self.snake.positions:
                     availablePositions.append([row, col])
-        
-        self.apples = random.sample(availablePositions, 4)
+        try:
+            applesCount = self.levelsData["levels"][self.currentLevel]["maxLength"]
+            print(applesCount)
+        except Exception as e:
+            return e
+        self.apples = random.sample(availablePositions, applesCount)
 
         for apple in self.apples:
             row, col = apple
             self.gridLayout.itemAtPosition(row,col).widget().setStyleSheet("background-color: #ff0000;")
-
-        
 
     def updateMapBlockSize(self):
         if self.squareBlocks:
@@ -247,15 +260,18 @@ class MainWindow(QMainWindow):
             self.squareBlocks = True
     
     def getStartPosition(self):
-        map = self.mapsData["maps"][self.currentLevel - 1]
+        map = self.mapsData["maps"][self.currentLevel]
         self.mapSize = map["size"]
         self.obstacles = map["obstacles"]
         
+        minDistanceFromBorder = 3
+
         availablePositions = []
         for row in range(self.mapSize[0]):
             for col in range(self.mapSize[1]):
                 if [row, col] not in self.obstacles:
-                    availablePositions.append((row,col))
+                    if (row >= minDistanceFromBorder and row <= self.mapSize[0] - minDistanceFromBorder) and (col >= minDistanceFromBorder and col <= self.mapSize[1] - minDistanceFromBorder):
+                        availablePositions.append((row,col))
         if availablePositions:
             return random.choice(availablePositions)
         else:
@@ -278,6 +294,23 @@ class MainWindow(QMainWindow):
         if self.gameStarted:
             self.snake.move()
             self.updateSnakePosition()
+
+            if len(self.apples) == 0:
+                self.nextLevel()
+
+    def nextLevel(self):
+        self.timer.stop()
+        self.currentLevel += 1
+        if self.currentLevel < len(self.levelsData["levels"]):
+            self.points += 10
+            self.pointsLabel.setText(f"Points: {self.points}")
+            self.levelLabel.setText(f"Level: {self.currentLevel}")
+            
+            self.gameStarted = False
+            
+            self.startGame()
+        else:
+            self.gameOver("You win!")
 
     def updateSnakePosition(self):
         for row in range(self.mapSize[0]):
@@ -308,7 +341,6 @@ class MainWindow(QMainWindow):
         row,col = headPos
         item = self.gridLayout.itemAtPosition(row, col)
 
-        print("ss", self.snake.positions)
         if item is not None:
             mapBlock = item.widget()
             mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
@@ -322,7 +354,7 @@ class MainWindow(QMainWindow):
                 mapBlock = item.widget()
                 mapBlock = self.gridLayout.itemAtPosition(row, col).widget()
                 mapBlock.setStyleSheet("background-color: #1eb81e;")
- 
+
         self.pointsLabel.setText(f"Points: {self.points}")
 
 if __name__ == "__main__":
