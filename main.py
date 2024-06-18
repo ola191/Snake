@@ -9,6 +9,7 @@ from PySide6.QtCore import Qt, QTimer
 class Snake:
     def __init__(self, startPosition, mapSize, mainWindow, direction="right"):
         self.positions = [startPosition]
+        self.length = 1
         self.direction = direction
         self.mapSize = mapSize
         self.mainWindow = mainWindow
@@ -233,7 +234,6 @@ class MainWindow(QMainWindow):
                 self.snake.changeDirection("up")
             elif key == Qt.Key_S:
                 self.snake.changeDirection("down")
-            self.snake.move()
             self.updateSnakePosition()
     
     def updateGame(self):
