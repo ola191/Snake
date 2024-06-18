@@ -14,15 +14,14 @@ class Snake:
 
     def move(self):
         x, y = self.positions[0]
-        match self.direction:
-            case "right":
-                newHead = (x, y + 1)
-            case "left":
-                newHead = (x, y - 1)
-            case "up":
-                newHead = (x - 1, y)
-            case "down":
-                newHead = (x + 1, y)
+        if self.direction == "right":
+            newHead = (x, y + 1)
+        elif self.direction == "left":
+            newHead = (x, y - 1)
+        elif self.direction == "up":
+            newHead = (x - 1, y)
+        elif self.direction == "down":
+            newHead = (x + 1, y)
         newHead = self.checkIfOutOfBounds(newHead)
         if newHead not in self.positions:
             self.positions.insert(0, newHead)
@@ -211,19 +210,19 @@ class MainWindow(QMainWindow):
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if self.gameStarted:
             key = event.key()
-            match key:
-                case Qt.Key_Left:
-                    print("left")
-                    self.snake.changeDirection("left")
-                case Qt.Key_Right:
-                    print("right")
-                    self.snake.changeDirection("right")
-                case Qt.Key_Up:
-                    print("up")
-                    self.snake.changeDirection("up")
-                case Qt.Key_Down:
-                    print("down")
-                    self.snake.changeDirection("down")
+            print("dsa")
+            if key == Qt.Key_Left:
+                print("left")
+                self.snake.changeDirection("left")
+            elif key == Qt.Key_Right:
+                print("right")
+                self.snake.changeDirection("right")
+            elif key == Qt.Key_Up:
+                print("up")
+                self.snake.changeDirection("up")
+            elif key == Qt.Key_Down:
+                print("down")
+                self.snake.changeDirection("down")
             self.snake.move()
             self.updateSnakePosition()
     
