@@ -15,7 +15,7 @@ class Snake:
 
     def move(self):
         x, y = self.positions[0]
-        newHead = ()
+        
         if self.direction == "right":
             newHead = (x, y + 1)
         elif self.direction == "left":
@@ -24,19 +24,24 @@ class Snake:
             newHead = (x - 1, y)
         elif self.direction == "down":
             newHead = (x + 1, y)
-        newHead = self.checkIfOutOfBounds(newHead)
+        
         if newHead not in self.positions:
             self.positions.insert(0, newHead)
-            print(self.positions)
             self.positions.pop()
         else:
-            self.mainWindow.gameOver()
+            self.mainWindow.gameOver("you kill self")
+        
+        if self.checkIfOutOfBounds(newHead):
+            self.mainWindow.gameOver("you go out of bounds")
+
+        if list(newHead) in self.mainWindow.obstacles:
+            self.mainWindow.gameOver("you hit an obstacle")
 
     def checkIfOutOfBounds(self, newHead):
         if newHead[0] < 0 or newHead[0] >= self.mapSize[0] or newHead[1] < 0 or newHead[1] >= self.mapSize[1]:
-            return self.positions[0]
+            return True
         else:
-            return newHead
+            return False
     
     def changeDirection(self, newDirection):
         if newDirection == "right" and self.direction != "left":
@@ -160,13 +165,13 @@ class MainWindow(QMainWindow):
             self.timer.timeout.connect(self.updateGame)
             self.timer.start(300)
 
-    def gameOver(self):
+    def gameOver(self, cause):
         self.gameStarted = False
         self.startBtn.show()
         self.squareBlocksBtn.show()
         self.pointsLabel.setText(f"Points: {self.points}")
         self.levelLabel.setText(f"Level: {self.currentLevel}")
-        showerror("Game Over", f"Your points: {self.points}")
+        showerror(cause, f"Your points: {self.points}")
         self.timer.stop()
 
     def generateMap(self):
